@@ -5,7 +5,11 @@ const listaDeReceitas = [
     id: 1,
     titulo: 'Cachorro quente',
     dificuldade: 'Simples',
-    ingredientes: ['1 pão de leite', '1 salsicha', '1 colher de batata palha'],
+    ingredientes: [
+      '1 pão de leite',
+      ' 1 salsicha',
+      ' 1 colher de batata palha'
+    ],
     preparo: 'Lorem ipsum dolor sit amet, consectrtur',
     link: 'https://youtube.com',
     vegan: false
@@ -31,43 +35,74 @@ const cadastrarReceita = (
     vegan
   }
   listaDeReceitas.push(novaReceita)
-  console.log(`Cadastro da receita ${titulo} realizado com sucesso`)
+  console.log(`Cadastro da receita ${titulo} realizada com sucesso!`)
 }
 cadastrarReceita(
   2,
   'Ovo frito',
   'simples',
-  ['1 ovo', '1 colher de azeite', 'sal a gosto'],
+  ['1 ovo', ' 1 colher de azeite', ' sal a gosto'],
   'Lorem ipsum dolor amet',
   'https://google.com',
   false
 )
 //Console para testar
-console.log(listaDeReceitas)
+//console.log(listaDeReceitas)
 
-//Função para exibir uma determinada receita, retornando apenas determinados atributos. Ex: titulo, ingredientes, vegan
+//Função para exibir todas as receitas, retornando apenas determinados atributos. Ex: titulo, ingredientes, vegan
+
 const exibirReceita = () => {
-  for (receita of listaDeReceitas) {
-    console.log(
-      `A receita ${receita.titulo} possui esses ingredientes: ${receita.ingredientes}, e ela é vegana? ${receita.vegan}`
+  listaDeReceitas.map(receita => {
+    return console.log(
+      `${receita.titulo} tem os seguintes ingredientes: ${
+        receita.ingredientes
+      } e ${receita.vegan ? 'é vegana' : 'não é vegana'}`
     )
-  }
+  })
 }
-//Testando
 exibirReceita()
 
+//Função para mostrar uma determinada receita, voltando apenas alguns atributos. Ex: titulo,ingredientes e vegan
+
+const mostrarReceita = identificador => {
+  const receitaMostrada = listaDeReceitas.find(receita => {
+    return receita.id == identificador
+  })
+  console.log(
+    `A receita ${receitaMostrada.titulo} possui esses ingredientes: ${
+      receitaMostrada.ingredientes
+    }, e ela é vegana? ${receitaMostrada.vegan ? 'sim' : 'não'}`
+  )
+}
+
+//Testando
+//mostrarReceita(1)
+
 //Função para deletar a receita pelo ID
-const deletarReceita = id => {
-  for (let i = 0; i < listaDeReceitas.length; i++) {
-    if (listaDeReceitas[i].id === id) {
-      listaDeReceitas.splice(i, 1)
-      console.log('Deletada com sucesso.')
-      return
-    }
+// const deletarReceita = id => {
+//   for (let i = 0; i < listaDeReceitas.length; i++) {
+//     if (listaDeReceitas[i].id === id) {
+//       listaDeReceitas.splice(i, 1)
+//       console.log('Deletada com sucesso.')
+//       return
+//     }
+//   }
+//   console.log('Receita não encontrada.')
+// }
+const deletarReceita = identificador => {
+  if (identificador > listaDeReceitas.length || identificador == 0) {
+    //checando o identificador
+    console.log('Receita não encontrada. Verifique o ID')
+    return
   }
-  console.log('Receita não encontrada.')
+  const indiceDaReceitaExcluida = listaDeReceitas.findIndex(receita => {
+    return receita.id == identificador
+  })
+  listaDeReceitas.splice(indiceDaReceitaExcluida, 1)
 }
 
 //Realizando testes de funcionalidades
-deletarReceita(2)
-exibirReceita()
+console.log(listaDeReceitas)
+deletarReceita(0)
+console.log(listaDeReceitas)
+// exibirReceita()
