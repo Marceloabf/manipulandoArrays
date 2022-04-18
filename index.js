@@ -1,20 +1,23 @@
+//Requerimento do módulo nativo fs
+const fs = require('fs')
+
 const companyName = 'Sistema Omma'
 console.log(companyName)
-const listaDeReceitas = [
-  {
-    id: 1,
-    titulo: 'Cachorro quente',
-    dificuldade: 'Simples',
-    ingredientes: ['1 pão de leite', '1 salsicha', '1 colher de batata palha'],
-    preparo: 'Lorem ipsum dolor sit amet, consectrtur',
-    link: 'https://youtube.com',
-    vegan: false
-  }
-]
+
+// const listaDeReceitas = [
+//   {
+//     id: 1,
+//     titulo: 'Cachorro quente',
+//     dificuldade: 'Simples',
+//     ingredientes: ['1 pão de leite', '1 salsicha', '1 colher de batata palha'],
+//     preparo: 'Lorem ipsum dolor sit amet, consectrtur',
+//     link: 'https://youtube.com',
+//     vegan: false
+//   }
+// ]
 
 //Função para adicionar receita recebendo as propriedades como parâmetros
 const cadastrarReceita = (
-  id,
   titulo,
   dificuldade,
   ingredientes,
@@ -22,8 +25,14 @@ const cadastrarReceita = (
   link,
   vegan
 ) => {
+  //Leitura dos arquivos do JSON
+  const rawData = fs.readFileSync('data.json')
+
+  //Conversão de buffer para js
+  const listaDeReceitas = JSON.parse(rawData)
+
   const novaReceita = {
-    id,
+    id: listaDeReceitas[listaDeReceitas.length - 1].id + 1,
     titulo,
     dificuldade,
     ingredientes,
@@ -32,13 +41,16 @@ const cadastrarReceita = (
     vegan
   }
   listaDeReceitas.push(novaReceita)
+
+  //Escrever as alterações no JSON
+  fs.writeFileSync('data.json', JSON.stringify(listaDeReceitas))
+
   console.log(`Cadastro da receita ${titulo} realizada com sucesso!`)
 }
 cadastrarReceita(
-  2,
-  'Ovo frito',
+  'Omelete',
   'simples',
-  ['1 ovo', '1 colher de azeite', 'sal a gosto'],
+  ['2 ovos', 'Verduras a gosto', '1 colher de azeite', 'sal a gosto'],
   'Lorem ipsum dolor amet',
   'https://google.com',
   false
@@ -50,15 +62,16 @@ cadastrarReceita(
 //Função para exibir todas as receitas, retornando apenas determinados atributos. Ex: titulo, ingredientes, vegan
 const exibirReceita = () => {
   listaDeReceitas.forEach(receita => {
+    const { titulo, ingredientes, vegan } = receita
     console.log('----------------------')
-    console.log(`Título: ${receita.titulo}`)
+    console.log(`Título: ${titulo}`)
 
     console.log(`Ingredientes:`)
-    receita.ingredientes.forEach(ingrediente => {
+    ingredientes.forEach(ingrediente => {
       console.log(`- ${ingrediente}`)
     })
 
-    console.log(`é vegana? ${receita.vegan ? 'sim.' : 'não.'}`)
+    console.log(`é vegana? ${vegan ? 'sim.' : 'não.'}`)
     console.log('----------------------')
   })
 }
