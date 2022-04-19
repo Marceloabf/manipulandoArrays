@@ -4,17 +4,19 @@ const fs = require('fs')
 const companyName = 'Sistema Omma'
 console.log(companyName)
 
-// const listaDeReceitas = [
-//   {
-//     id: 1,
-//     titulo: 'Cachorro quente',
-//     dificuldade: 'Simples',
-//     ingredientes: ['1 pão de leite', '1 salsicha', '1 colher de batata palha'],
-//     preparo: 'Lorem ipsum dolor sit amet, consectrtur',
-//     link: 'https://youtube.com',
-//     vegan: false
-//   }
-// ]
+//Salvando em variáveis a abertura e a escrita no JSON, para deixar o código mais limpo
+const abrirBancoDeDados = () => {
+  //Leitura dos arquivos do JSON
+  const rawData = fs.readFileSync('data.json')
+  //Conversão de buffer para js
+  const listaDeReceitas = JSON.parse(rawData)
+  return listaDeReceitas
+}
+
+const fecharBancoDeDados = listaDeReceitas => {
+  //Escrever as alterações no JSON
+  fs.writeFileSync('data.json', JSON.stringify(listaDeReceitas))
+}
 
 //Função para adicionar receita recebendo as propriedades como parâmetros
 const cadastrarReceita = (
@@ -25,12 +27,7 @@ const cadastrarReceita = (
   link,
   vegan
 ) => {
-  //Leitura dos arquivos do JSON
-  const rawData = fs.readFileSync('data.json')
-
-  //Conversão de buffer para js
-  const listaDeReceitas = JSON.parse(rawData)
-
+  const listaDeReceitas = abrirBancoDeDados()
   const novaReceita = {
     id: listaDeReceitas[listaDeReceitas.length - 1].id + 1,
     titulo,
@@ -41,26 +38,23 @@ const cadastrarReceita = (
     vegan
   }
   listaDeReceitas.push(novaReceita)
-
-  //Escrever as alterações no JSON
-  fs.writeFileSync('data.json', JSON.stringify(listaDeReceitas))
-
+  fecharBancoDeDados(listaDeReceitas)
   console.log(`Cadastro da receita ${titulo} realizada com sucesso!`)
 }
-cadastrarReceita(
-  'Omelete',
-  'simples',
-  ['2 ovos', 'Verduras a gosto', '1 colher de azeite', 'sal a gosto'],
-  'Lorem ipsum dolor amet',
-  'https://google.com',
-  false
-)
 
-//Console para testar
-//console.log(listaDeReceitas)
+//-----Testando-----//
+// cadastrarReceita(
+//   'Omelete',
+//   'simples',
+//   ['2 ovos', 'Verduras a gosto', '1 colher de azeite', 'sal a gosto'],
+//   'Lorem ipsum dolor amet',
+//   'https://google.com',
+//   false
+// )
 
 //Função para exibir todas as receitas, retornando apenas determinados atributos. Ex: titulo, ingredientes, vegan
 const exibirReceita = () => {
+  const listaDeReceitas = abrirBancoDeDados()
   listaDeReceitas.forEach(receita => {
     const { titulo, ingredientes, vegan } = receita
     console.log('----------------------')
@@ -76,11 +70,12 @@ const exibirReceita = () => {
   })
 }
 
-//Testando
+//-----Testando-----//
 // exibirReceita()
 
 //Função para mostrar uma determinada receita, voltando apenas alguns atributos. Ex: titulo,ingredientes e vegan
 const mostrarReceita = identificador => {
+  const listaDeReceitas = abrirBancoDeDados()
   const receitaMostrada = listaDeReceitas.find(receita => {
     return receita.id == identificador
   })
@@ -91,22 +86,24 @@ const mostrarReceita = identificador => {
   )
 }
 
-//Testando
+//-----Testando-----//
 // mostrarReceita(1)
 
 //Função para buscar uma receita por um termo no título
 const buscarReceita = termo => {
+  const listaDeReceitas = abrirBancoDeDados()
   const receitasEncontradas = listaDeReceitas.filter(receita => {
-    return receita.titulo.toLowerCase().indexOf(termo) != -1
+    return receita.titulo.includes(termo)
   })
   console.log(receitasEncontradas)
 }
 
-//Testando
+//-----Testando-----//
 // buscarReceita('quente')
 
 //Função para atualizar receita
 const atualizarReceita = (id, receitaAtualizada = {}) => {
+  const listaDeReceitas = abrirBancoDeDados()
   const indiceDaReceita = listaDeReceitas.findIndex(receita => {
     return receita.id == id
   })
@@ -118,10 +115,11 @@ const atualizarReceita = (id, receitaAtualizada = {}) => {
     ...listaDeReceitas[indiceDaReceita],
     ...receitaAtualizada
   }
+  fecharBancoDeDados(listaDeReceitas)
   console.log(`Receita atualizada com sucesso!`)
 }
 
-//testando
+//-----Testando-----//
 // atualizarReceita(2, {
 //   titulo: 'Ovo cozido',
 //   ingredientes: ['Ovo', 'água'],
@@ -129,20 +127,9 @@ const atualizarReceita = (id, receitaAtualizada = {}) => {
 // })
 // exibirReceita()
 
-//Função para deletar a receita pelo ID - antes da refatoração
-// const deletarReceita = id => {
-//   for (let i = 0; i < listaDeReceitas.length; i++) {
-//     if (listaDeReceitas[i].id === id) {
-//       listaDeReceitas.splice(i, 1)
-//       console.log('Deletada com sucesso.')
-//       return
-//     }
-//   }
-//   console.log('Receita não encontrada.')
-// }
-
 //Função deletar receita refatorada com metodos de array
 const deletarReceita = identificador => {
+  const listaDeReceitas = abrirBancoDeDados()
   //checando o identificador
   if (identificador > listaDeReceitas.length || identificador <= 0) {
     console.log('Receita não encontrada. Verifique o ID.')
@@ -152,9 +139,8 @@ const deletarReceita = identificador => {
     return receita.id == identificador
   })
   listaDeReceitas.splice(indiceDaReceitaExcluida, 1)
+  fecharBancoDeDados(listaDeReceitas)
 }
 
-//Realizando testes de funcionalidades
-// exibirReceita()
-// deletarReceita(-1)
-// exibirReceita()
+//-----Testando-----//
+// deletarReceita(4)
